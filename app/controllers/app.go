@@ -1,6 +1,8 @@
 package controllers
 
 import (
+  "crypto/sha1"
+  "encoding/hex"
   "errors"
   "fmt"
   "github.com/revel/revel"
@@ -41,14 +43,24 @@ func (c App) Generate() revel.Result {
 
   uid := uuid.NewV4()
   noncestr := uid.String()
-  timestamp := time.Now().Unix()
+  timestamp := strconv.FormatInt(time.Now().Unix(), 10)
   ticket := models.GetGlobalTokens().G_JSTicket.Ticket
+
+  string1 := fmt.Sprintf("jsapi_ticket=%s&noncestr=%s&timestamp=%s&url=%s",
+    ticket, noncestr, timestamp, url)
+
+  h := sha1.New()
+  h.Write([]byte(string1))
+  bs := h.Sum(nil)
+  revel.INFO.Printf("%x", bs)
+  signature := hex.EncodeToString(bs)
 
   return c.RenderJson(map[string]string{
     "noncestr":     noncestr,
     "jsapi_ticket": ticket,
-    "timestamp":    strconv.FormatInt(timestamp, 10),
-    "url":          url})
+    "timestamp":    timestamp,
+    "url":          url,
+    "signature":    signature})
 }
 
 // get Access token and store it global
