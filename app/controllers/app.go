@@ -4,7 +4,9 @@ import (
   "errors"
   "fmt"
   "github.com/revel/revel"
+  "github.com/satori/go.uuid"
   "strconv"
+  "time"
   "wxSignature/app/models"
 )
 
@@ -28,12 +30,25 @@ func (c App) Generate() revel.Result {
     return c.RenderJson(errors.New("secret not found"))
   }
 
+  url, found := revel.Config.String("wx.url")
+  if !found {
+    return c.RenderJson(errors.New("url not found"))
+  }
+
   getAccessToken(appid, secret)
   accessToken := models.GetGlobalTokens().G_AccessToken
   getTicket(accessToken.Token)
-  revel.INFO.Println(models.GetGlobalTokens().G_JSTicket.Ticket)
 
-  return c.RenderJson(nil)
+  uid := uuid.NewV4()
+  noncestr := uid.String()
+  timestamp := time.Now().Unix()
+  ticket := models.GetGlobalTokens().G_JSTicket.Ticket
+
+  return c.RenderJson(map[string]string{
+    "noncestr":     noncestr,
+    "jsapi_ticket": ticket,
+    "timestamp":    strconv.FormatInt(timestamp, 10),
+    "url":          url})
 }
 
 // get Access token and store it global

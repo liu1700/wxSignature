@@ -7,13 +7,13 @@
 
 # This sets the `AppName` variable which can be used in your code as
 #   `if revel.AppName {...}`
-app.name = weixin
+app.name = {{ .AppName }}
 
 # A secret string which is passed to cryptographically sign the cookie to prevent
 # (and detect) user modification.
 # Keep this string secret or users will be able to inject arbitrary cookie values
 # into your application
-app.secret = DMMoRMyDSUTawfiTn6zqGl9GA9hMaOH8smQKtsMbfDY7ZvX8a7pHiOc5rJpd1EWF
+app.secret = {{ .Secret }}
 
 
 # The IP address on which to listen.
@@ -94,14 +94,7 @@ i18n.default_language = en
 #  `Static.ServeModule("modulename","public")`
 module.static=github.com/revel/modules/static
 
-#Wechat Url
-wxAccessTokenAPI = https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&
-wxTicketAPI = https://api.weixin.qq.com/cgi-bin/ticket/getticket?
 
-#Wechat Config
-wx.appid = wx6f2525b4b41d537d
-wx.secret = b19a22b037ea440d4f3803986fc99df6
-wx.url = http://123.57.157.248
 
 ################################################################################
 # Section: dev
@@ -111,7 +104,7 @@ wx.url = http://123.57.157.248
 # This sets `DevMode` variable to `true` which can be used in your code as
 #   `if revel.DevMode {...}`
 #   or in your templates with
-#   `<no value>`
+#   `{{.DevMode}}`
 mode.dev = true
 
 
